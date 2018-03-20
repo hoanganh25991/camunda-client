@@ -4,6 +4,8 @@ const axios = Oaxios.create({
   timeout: 6000
 })
 
+const _ = console.log
+
 export const transform = data => {
 	// Sanity check
 	const isObj = typeof data === "object"
@@ -28,23 +30,26 @@ export const transform = data => {
   return {variables}
 }
 
-export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/task/${processId}/submit-form`
+export const getTaskVariablesEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/form-variables`
 
-export const submit = async (restUrl, processId, data) => {
+export const submit = async (restUrl, taskId, data) => {
 
-  const endpoint = getStartProcessEndpoint(restUrl, processId)
-  const postData = transform(data)
-  console.log("[endpoint, postData]", endpoint, postData)
+  const endpoint = getTaskVariablesEndpoint(restUrl, taskId)
+  console.log("[endpoint]", endpoint)
 
   try{
     const res = await axios({
+      method: "GET",
       url: endpoint,
-      data:postData,
-      headers:{
-        "Access-Control-Allow-Origin": "*",
-      }
+      headers:{ "Access-Control-Allow-Origin": "*", }
     })
-    return res.data
+
+    const data = res.data
+    _("[data]", data)
+
+
+
+
   }catch(err){
     console.log("[submit][ERR]", err.message)
     return null
