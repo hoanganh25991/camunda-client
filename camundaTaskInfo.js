@@ -28,7 +28,7 @@ export const transform = data => {
   return {variables}
 }
 
-export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/process-definition/${processId}/submit-form`
+export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/task/${processId}/submit-form`
 
 export const submit = async (restUrl, processId, data) => {
 
