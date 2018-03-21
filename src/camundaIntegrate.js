@@ -92,7 +92,8 @@ export const getTaskInfo = async (restUrl, taskId) => {
   const endpoint = getTaskInfoEndpoint(restUrl, taskId)
 
   try {
-    const taskVariables = await axios.get(endpoint)
+    const res = await axios.get(endpoint)
+    const taskVariables = res.data
     return transformCamundaDataToFormData(taskVariables)
   } catch (err) {
     _("[getTaskInfo][ERR]", err.message)
