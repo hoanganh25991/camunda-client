@@ -57,7 +57,7 @@ export const submit = async (restUrl, processId, data) => {
 
   try {
     const res = await axios({
-      method: "GET",
+      method: "POST",
       url: endpoint,
       data: postData
     })

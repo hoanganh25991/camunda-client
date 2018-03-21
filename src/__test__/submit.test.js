@@ -8,7 +8,7 @@ const infoTestStatus = (pass, testCase) =>
 ;(async () => {
   const TEST_CASE = "Start Process to create task"
   const restUrl = "http://localhost:8080/engine-rest"
-  const processId = "ExternalJsExample:1:fe933194-2756-11e8-a306-0a0027000004"
+  const processId = "Process_1:1:358277ac-2cb7-11e8-9f17-e09d312afda0"
   const data = { jsonString: '{"q":12345}' }
   let pass = true
 
