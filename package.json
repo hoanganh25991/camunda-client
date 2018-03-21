@@ -1,6 +1,6 @@
 {
 	"name": "camunda-client",
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
@@ -24,7 +24,8 @@
 		"precommit": "lint-staged",
 		"test": "babel-node scripts/run-test",
 		"build": "babel-node scripts/deploy.js",
-		"babel-node": "babel-node"
+		"babel-node": "babel-node",
+		"bn": "babel-node"
 	},
 	"lint-staged": {
 		"*.js": [
