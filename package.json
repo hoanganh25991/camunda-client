@@ -1,10 +1,10 @@
 {
 	"name": "camunda-client",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/npm/npm.git"
+		"url": "https://github.com/hoanganh25991/camunda-client"
 	},
 	"main": "dist/camundaIntegrate.js",
 	"devDependencies": {
