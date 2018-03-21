@@ -64,7 +64,23 @@ export const submit = async (restUrl, processId, data) => {
   }
 }
 
-export const transformCamundaDataToFormData = camundaData => {}
+export const transformCamundaDataToFormData = camundaData => {
+  try {
+    return Object.keys(camundaData).reduce((carry, key) => {
+      const valObj = camundaData[key]["value"]
+      let realVal = valObj
+      try {
+        realVal = JSON.parse(valObj)
+      } catch (err) {}
+
+      carry[key] = realVal
+      return carry
+    }, {})
+  } catch (err) {
+    _("[transformCamundaDataToFormData][ERR]", err.message)
+    return null
+  }
+}
 
 /**
  * Get Task Info
