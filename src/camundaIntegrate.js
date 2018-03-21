@@ -64,6 +64,11 @@ export const submit = async (restUrl, processId, data) => {
   }
 }
 
+/**
+ * Transform Camunda data to Form data
+ * @param camundaData
+ * @return {*}
+ */
 export const transformCamundaDataToFormData = camundaData => {
   try {
     return Object.keys(camundaData).reduce((carry, key) => {
