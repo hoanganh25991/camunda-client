@@ -170,7 +170,10 @@ export const getTaskList = async (restUrl, { processId, filters, sorting }) => {
   const endpoint = getTaskFiltersEndpoint(restUrl)
   const data = {
     processDefinitionId: processId,
-    taskVariables: filters,
+    // It's quite WEIRD that Camunda call processVariables
+    // May be we start a process > task
+    // Task's variables ONLY exist in task instance itself
+    processVariables: filters,
     sorting
   }
 
