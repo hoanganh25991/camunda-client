@@ -5,10 +5,10 @@ const axios = Oaxios.create({
 })
 
 export const transform = data => {
-	// Sanity check
-	const isObj = typeof data === "object"
-	if(!isObj) {
-	  throw new Error("Please submit data obj")
+  // Sanity check
+  const isObj = typeof data === "object"
+  if (!isObj) {
+    throw new Error("Please submit data obj")
   }
 
   // Do transform
@@ -25,29 +25,27 @@ export const transform = data => {
     return carry
   }, {})
 
-  return {variables}
+  return { variables }
 }
 
 export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/process-definition/${processId}/submit-form`
 
 export const submit = async (restUrl, processId, data) => {
-
   const endpoint = getStartProcessEndpoint(restUrl, processId)
   const postData = transform(data)
   console.log("[endpoint, postData]", endpoint, postData)
 
-  try{
+  try {
     const res = await axios({
       url: endpoint,
-      data:postData,
-      headers:{
-        "Access-Control-Allow-Origin": "*",
+      data: postData,
+      headers: {
+        "Access-Control-Allow-Origin": "*"
       }
     })
     return res.data
-  }catch(err){
+  } catch (err) {
     console.log("[submit][ERR]", err.message)
     return null
   }
 }
-

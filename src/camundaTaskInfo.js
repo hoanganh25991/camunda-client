@@ -7,10 +7,10 @@ const axios = Oaxios.create({
 const _ = console.log
 
 export const transform = data => {
-	// Sanity check
-	const isObj = typeof data === "object"
-	if(!isObj) {
-	  throw new Error("Please submit data obj")
+  // Sanity check
+  const isObj = typeof data === "object"
+  if (!isObj) {
+    throw new Error("Please submit data obj")
   }
 
   // Do transform
@@ -27,32 +27,26 @@ export const transform = data => {
     return carry
   }, {})
 
-  return {variables}
+  return { variables }
 }
 
 export const getTaskVariablesEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/form-variables`
 
 export const submit = async (restUrl, taskId, data) => {
-
   const endpoint = getTaskVariablesEndpoint(restUrl, taskId)
   console.log("[endpoint]", endpoint)
 
-  try{
+  try {
     const res = await axios({
       method: "GET",
       url: endpoint,
-      headers:{ "Access-Control-Allow-Origin": "*", }
+      headers: { "Access-Control-Allow-Origin": "*" }
     })
 
     const data = res.data
     _("[data]", data)
-
-
-
-
-  }catch(err){
+  } catch (err) {
     console.log("[submit][ERR]", err.message)
     return null
   }
 }
-

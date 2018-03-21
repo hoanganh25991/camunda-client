@@ -14,7 +14,8 @@
   "scripts": {
     "precommit": "lint-staged",
     "test": "babel-node scripts/run-test",
-    "build": "babel-node scripts/deploy.js"
+    "build": "babel-node scripts/deploy.js",
+    "babel-node": "babel-node"
   },
   "dependencies": {
     "axios": "^0.18.0"
