@@ -3,6 +3,8 @@ import { transformCamundaDataToFormData } from "../camundaIntegrate"
 const _ = console.log
 const infoTestStatus = (pass, testCase) =>
   pass ? _(`\x1b[42m[PASS]\x1b[0m ${testCase}`) : _(`\x1b[41m[FAIL]\x1b[0m ${testCase}`)
+
+// Run test
 ;(async () => {
   const TEST_CASE = "Transform Camunda data > Form data"
   let pass = true
