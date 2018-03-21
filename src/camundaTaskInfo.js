@@ -13,7 +13,7 @@ export const transform = data => {
     throw new Error("Please submit data obj")
   }
 
-  // Do transform
+  // Do transformFormDataToCamundaData
   const variables = Object.keys(data).reduce((carry, key) => {
     const _val = data[key]
     const isStr = typeof _val === "string"
@@ -30,10 +30,8 @@ export const transform = data => {
   return { variables }
 }
 
-export const getTaskVariablesEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/form-variables`
-
 export const submit = async (restUrl, taskId, data) => {
-  const endpoint = getTaskVariablesEndpoint(restUrl, taskId)
+  const endpoint = getTaskInfoEndpoint(restUrl, taskId)
   console.log("[endpoint]", endpoint)
 
   try {

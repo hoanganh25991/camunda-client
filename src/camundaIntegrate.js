@@ -1,17 +1,26 @@
 import Oaxios from "axios"
 
-const axios = Oaxios.create({
-  timeout: 6000
-})
+// Fetch by axios
+const axios = Oaxios.create({ timeout: 6000 })
+const _ = console.log
 
-export const transform = data => {
+// REST endpoints
+export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/process-definition/${processId}/submit-form`
+export const getTaskInfoEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/form-variables`
+
+/**
+ * Transform Form data to Camunda data shape
+ * @param data
+ * @return {{variables: *}}
+ */
+export const transformFormDataToCamundaData = data => {
   // Sanity check
   const isObj = typeof data === "object"
   if (!isObj) {
     throw new Error("Please submit data obj")
   }
 
-  // Do transform
+  // Do transformFormDataToCamundaData
   const variables = Object.keys(data).reduce((carry, key) => {
     const _val = data[key]
     const isStr = typeof _val === "string"
@@ -28,24 +37,49 @@ export const transform = data => {
   return { variables }
 }
 
-export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/process-definition/${processId}/submit-form`
-
+/**
+ * Submit to create Camunda Task
+ * by start a process
+ * @param restUrl
+ * @param processId
+ * @param data
+ * @return {Promise.<null>}
+ */
 export const submit = async (restUrl, processId, data) => {
   const endpoint = getStartProcessEndpoint(restUrl, processId)
-  const postData = transform(data)
-  console.log("[endpoint, postData]", endpoint, postData)
+  const postData = transformFormDataToCamundaData(data)
+  _("[endpoint, postData]", endpoint, postData)
 
   try {
     const res = await axios({
+      method: "GET",
       url: endpoint,
       data: postData,
-      headers: {
-        "Access-Control-Allow-Origin": "*"
-      }
+      headers: { "Access-Control-Allow-Origin": "*" }
     })
     return res.data
   } catch (err) {
-    console.log("[submit][ERR]", err.message)
+    _("[submit][ERR]", err.message)
+    return null
+  }
+}
+
+export const transformCamundaDataToFormData = camundaData => {}
+
+/**
+ * Get Task Info
+ * @param restUrl
+ * @param taskId
+ * @return {Promise.<null>}
+ */
+export const getTaskInfo = async (restUrl, taskId) => {
+  const endpoint = getTaskInfoEndpoint(restUrl, taskId)
+
+  try {
+    const taskVariables = await axios.get(endpoint)
+    return transformCamundaDataToFormData(taskVariables)
+  } catch (err) {
+    _("[getTaskInfo][ERR]", err.message)
     return null
   }
 }

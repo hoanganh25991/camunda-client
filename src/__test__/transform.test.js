@@ -1,7 +1,7 @@
-import { transform } from "../camundaIntegrate"
+import { transformFormDataToCamundaData } from "../camundaIntegrate"
 
 const data = { name: "anh", age: 25 }
-const dataVariables = transform(data)
+const dataVariables = transformFormDataToCamundaData(data)
 console.log(dataVariables)
 
 const data2 = {
@@ -53,4 +53,4 @@ const data2 = {
   },
   comment: ""
 }
-console.log(transform(data2))
+console.log(transformFormDataToCamundaData(data2))
