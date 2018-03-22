@@ -15,6 +15,8 @@ export const getTaskFiltersEndpoint = restUrl => `${restUrl}/task`
 export const getTaskBriefEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}`
 export const getStartFormEndpoint = (restUrl, processDefinitionId) =>
   `${restUrl}/process-definition/${processDefinitionId}/startForm`
+export const getTaskListHistoryEndpoint = (restUrl, processInstanceId) =>
+  `${restUrl}/history/task?processInstanceId=${processInstanceId}`
 
 /**
  * Transform Form data to Camunda data shape
@@ -198,8 +200,9 @@ export const getTaskList = async (restUrl, { processId, filters, sorting }) => {
 }
 
 /**
- * Get form key form specific task
- * Base on taskId to find out
+ * Get form key for specific task
+ * We dont get formKey directly from task brief info
+ * Bcs we actually need startForm key
  * @see https://docs.camunda.org/manual/7.8/reference/rest/process-definition/get-start-form-key/
  * @param restUrl
  * @param taskId
@@ -218,6 +221,32 @@ export const getFormKey = async (restUrl, taskId) => {
     return formKey
   } catch (err) {
     _("[getFormKey][ERR]", err.message)
+    return null
+  }
+}
+
+/**
+ * Get task list history
+ * Task is single step in process instance
+ * Find out task list history base on process instasnce id
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/history/task/get-task-query/
+ * @param restUrl
+ * @param taskId
+ * @return {Promise.<null>}
+ */
+export const getTaskListHistory = async (restUrl, taskId) => {
+  try {
+    const endpoint = getTaskBriefEndpoint(restUrl, taskId)
+    const res = await axios.get(endpoint)
+    const { processInstanceId } = res.data
+
+    const taskListEndpoint = getTaskListHistoryEndpoint(restUrl, processInstanceId)
+    const res2 = await axios.get(taskListEndpoint)
+    const taskList = res2.data
+
+    return taskList
+  } catch (err) {
+    _("[getTaskListHistory][ERR]", err.message)
     return null
   }
 }
