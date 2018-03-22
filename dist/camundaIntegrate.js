@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 })
-exports.getTaskList = exports.validTaskFiltersFormat = exports.getTaskInfo = exports.transformCamundaDataToFormData = exports.submit = exports.transformFormDataToCamundaData = exports.getTaskFiltersEndpoint = exports.getTaskInfoEndpoint = exports.getStartProcessEndpoint = undefined
+exports.getTaskListHistory = exports.getFormKey = exports.getTaskList = exports.validTaskFiltersFormat = exports.getTaskInfo = exports.transformCamundaDataToFormData = exports.submit = exports.transformFormDataToCamundaData = exports.getTaskListHistoryEndpoint = exports.getStartFormEndpoint = exports.getTaskBriefEndpoint = exports.getTaskFiltersEndpoint = exports.getTaskInfoEndpoint = exports.getStartProcessEndpoint = undefined
 
 var _axios = require("axios")
 
@@ -57,6 +57,11 @@ const getStartProcessEndpoint = (exports.getStartProcessEndpoint = (restUrl, pro
 const getTaskInfoEndpoint = (exports.getTaskInfoEndpoint = (restUrl, taskId) =>
   `${restUrl}/task/${taskId}/form-variables`)
 const getTaskFiltersEndpoint = (exports.getTaskFiltersEndpoint = restUrl => `${restUrl}/task`)
+const getTaskBriefEndpoint = (exports.getTaskBriefEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}`)
+const getStartFormEndpoint = (exports.getStartFormEndpoint = (restUrl, processDefinitionId) =>
+  `${restUrl}/process-definition/${processDefinitionId}/startForm`)
+const getTaskListHistoryEndpoint = (exports.getTaskListHistoryEndpoint = (restUrl, processInstanceId) =>
+  `${restUrl}/history/task?processInstanceId=${processInstanceId}`)
 
 /**
  * Transform Form data to Camunda data shape
@@ -143,7 +148,10 @@ const transformCamundaDataToFormData = (exports.transformCamundaDataToFormData =
 })
 
 /**
- * Get Task Info
+ * Get Task info
+ * Task info actually task form variables
+ * Task form variables is different from task's variables itself ^^
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/task/get-form-variables/
  * @param restUrl
  * @param taskId
  * @return {Promise.<null>}
@@ -251,5 +259,69 @@ const getTaskList = (exports.getTaskList = (() => {
 
   return function getTaskList(_x6, _x7) {
     return _ref3.apply(this, arguments)
+  }
+})())
+
+/**
+ * Get form key for specific task
+ * We dont get formKey directly from task brief info
+ * Bcs we actually need startForm key
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/process-definition/get-start-form-key/
+ * @param restUrl
+ * @param taskId
+ * @return {Promise.<null>}
+ */
+const getFormKey = (exports.getFormKey = (() => {
+  var _ref4 = _asyncToGenerator(function*(restUrl, taskId) {
+    try {
+      const endpoint = getTaskBriefEndpoint(restUrl, taskId)
+      const res = yield axios.get(endpoint)
+      const { processDefinitionId } = res.data
+
+      const startFormEndPoint = getStartFormEndpoint(restUrl, processDefinitionId)
+      const res2 = yield axios.get(startFormEndPoint)
+      const { key: formKey } = res2.data
+
+      return formKey
+    } catch (err) {
+      _("[getFormKey][ERR]", err.message)
+      return null
+    }
+  })
+
+  return function getFormKey(_x8, _x9) {
+    return _ref4.apply(this, arguments)
+  }
+})())
+
+/**
+ * Get task list history
+ * Task is single step in process instance
+ * Find out task list history base on process instasnce id
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/history/task/get-task-query/
+ * @param restUrl
+ * @param taskId
+ * @return {Promise.<null>}
+ */
+const getTaskListHistory = (exports.getTaskListHistory = (() => {
+  var _ref5 = _asyncToGenerator(function*(restUrl, taskId) {
+    try {
+      const endpoint = getTaskBriefEndpoint(restUrl, taskId)
+      const res = yield axios.get(endpoint)
+      const { processInstanceId } = res.data
+
+      const taskListEndpoint = getTaskListHistoryEndpoint(restUrl, processInstanceId)
+      const res2 = yield axios.get(taskListEndpoint)
+      const taskList = res2.data
+
+      return taskList
+    } catch (err) {
+      _("[getTaskListHistory][ERR]", err.message)
+      return null
+    }
+  })
+
+  return function getTaskListHistory(_x10, _x11) {
+    return _ref5.apply(this, arguments)
   }
 })())
