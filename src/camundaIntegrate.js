@@ -12,6 +12,9 @@ const ACCEPTED_OPERATORS = ["eq", "neq", "gt", "gteq", "lt", "lteq", "like"]
 export const getStartProcessEndpoint = (restUrl, processId) => `${restUrl}/process-definition/${processId}/submit-form`
 export const getTaskInfoEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/form-variables`
 export const getTaskFiltersEndpoint = restUrl => `${restUrl}/task`
+export const getTaskBriefEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}`
+export const getStartFormEndpoint = (restUrl, processDefinitionId) =>
+  `${restUrl}/process-definition/${processDefinitionId}/startForm`
 
 /**
  * Transform Form data to Camunda data shape
@@ -92,7 +95,10 @@ export const transformCamundaDataToFormData = camundaData => {
 }
 
 /**
- * Get Task Info
+ * Get Task info
+ * Task info actually task form variables
+ * Task form variables is different from task's variables itself ^^
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/task/get-form-variables/
  * @param restUrl
  * @param taskId
  * @return {Promise.<null>}
@@ -187,6 +193,31 @@ export const getTaskList = async (restUrl, { processId, filters, sorting }) => {
     return taskList
   } catch (err) {
     _("[getTaskList][ERR]", err.message)
+    return null
+  }
+}
+
+/**
+ * Get form key form specific task
+ * Base on taskId to find out
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/process-definition/get-start-form-key/
+ * @param restUrl
+ * @param taskId
+ * @return {Promise.<null>}
+ */
+export const getFormKey = async (restUrl, taskId) => {
+  try {
+    const endpoint = getTaskBriefEndpoint(restUrl, taskId)
+    const res = await axios.get(endpoint)
+    const { processDefinitionId } = res.data
+
+    const startFormEndPoint = getStartFormEndpoint(restUrl, processDefinitionId)
+    const res2 = await axios.get(startFormEndPoint)
+    const { key: formKey } = res2.data
+
+    return formKey
+  } catch (err) {
+    _("[getFormKey][ERR]", err.message)
     return null
   }
 }
