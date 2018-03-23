@@ -1,0 +1,44 @@
+<input type="file" name="test"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+<script>
+  const Oaxios = window.axios
+  const axios = Oaxios.create({
+    headers: {"Access-Control-Allow-Origin": "*"},
+    timeout: 6000
+  })
+  const _ = console.log
+  const restUrl = "http://localhost:8080/engine-rest"
+  const taskId = "112e6ba8-2cce-11e8-8903-e09d312afda0"
+  const attachmentInfo = {
+    "attachmentName": "test.xlsx",
+    "attachmentDescription": "ac",
+    "attachmentType": "application/xxx",
+    "documentType": "receipt"
+  }
+
+  const getSubmitTaskAttachmentEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/attachment/create`
+  const submitTaskAttachment = async (restUrl, {taskId, attachmentInfo, file}) => {
+    try {
+      const endpoint = getSubmitTaskAttachmentEndpoint(restUrl, taskId)
+      _("[endpoint]", endpoint)
+      const formData = new FormData({})
+      formData.append("attachmentInfo", JSON.stringify(attachmentInfo))
+      formData.append("content", file)
+      const res = await axios({
+        method: "POST",
+        url: endpoint,
+        data: formData,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "multipart/form-data",
+        },
+      })
+      const attachment = res.data
+      return attachment
+    } catch (err) {
+      _("[submitTaskAttachment][ERR]", err.message)
+      return null
+    }
+  }
+
+</script>

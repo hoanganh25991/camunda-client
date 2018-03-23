@@ -18,7 +18,8 @@
 		"prettier": "^1.4.4"
 	},
 	"dependencies": {
-		"axios": "^0.18.0"
+		"axios": "^0.18.0",
+		"form-data": "^2.3.2"
 	},
 	"scripts": {
 		"precommit": "lint-staged",

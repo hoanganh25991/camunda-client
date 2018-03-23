@@ -1,4 +1,5 @@
 import Oaxios from "axios"
+import FormData from "form-data"
 
 // Fetch by axios
 const axios = Oaxios.create({
@@ -264,14 +265,17 @@ export const getTaskListHistory = async (restUrl, taskId) => {
 export const submitTaskAttachment = async (restUrl, { taskId, attachmentInfo, file }) => {
   try {
     const endpoint = getSubmitTaskAttachmentEndpoint(restUrl, taskId)
-    const bodyFormData = new FormData()
-    bodyFormData.append("attachmentInfo", JSON.stringify(attachmentInfo))
-    bodyFormData.append("content", file)
+    const formData = new FormData()
+    formData.append("attachmentInfo", JSON.stringify(attachmentInfo))
+    formData.append("content", file)
     const res = await axios({
       method: "POST",
       url: endpoint,
-      data: bodyFormData,
-      headers: { "Content-Type": "multipart/form-data" }
+      data: formData,
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "multipart/form-data"
+      }
     })
     const attachment = res.data
     return attachment
