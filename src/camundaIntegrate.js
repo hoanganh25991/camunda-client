@@ -283,13 +283,41 @@ export const submitTaskAttachment = async (restUrl, { taskId, attachmentInfo, fi
   }
 }
 
+export const isInputFile = val => val && val.type && val.type === "file"
+export const axiosFileStream = url => {
+  const streamOpt = { url, method: "GET", responseType: "stream" }
+  return axios(streamOpt)
+}
+
 /**
  * Submit form files to task id
+ * @param restUrl
  * @param taskId
  * @param formData
  * @return formData
  */
-export const loopSubmitFormFilesToTaskId = (taskId, formData) => {
+export const loopSubmitFormFilesToTaskId = async (restUrl, taskId, formData) => {
+  const waitList = Object.keys(formData).map(key => {
+    const val = formData[key]
+    if (!isInputFile(val)) return null
+
+    const { data } = val
+    const hasFile = data && Array.isArray(data) && data.length > 0
+    if (!hasFile) return null
+
+    return Promise.all(
+      data.map(async file => {
+        const { url } = file
+        const attachmentInfo = {}
+        const streamOpt = { url, method: "GET", responseType: "stream" }
+        const { url: newUrl } = await submitTaskAttachment(restUrl, { taskId, attachmentInfo, file: axios(streamOpt) })
+        file.url = newUrl
+      })
+    )
+  })
+
+  await Promise.all(waitList)
+
   /* Updated formData */
   return formData
 }

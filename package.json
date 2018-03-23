@@ -28,7 +28,8 @@
 		"babel-node": "babel-node",
 		"bn": "babel-node",
 		"webpack": "webpkack",
-		"client": "webpack --config webpack.config.js"
+		"client": "webpack --config webpack.config.js",
+		"bundle": "webpack --config webpack.config.js"
 	},
 	"lint-staged": {
 		"*.js": [
