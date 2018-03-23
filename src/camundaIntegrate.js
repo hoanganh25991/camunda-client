@@ -54,13 +54,11 @@ export const transformFormDataToCamundaData = data => {
  * by start a process
  * @param restUrl
  * @param processId
- * @param data
+ * @param postData
  * @return {Promise.<null>}
  */
-export const submit = async (restUrl, processId, data) => {
+export const submitTask = async (restUrl, processId, postData) => {
   const endpoint = getStartProcessEndpoint(restUrl, processId)
-  const postData = transformFormDataToCamundaData(data)
-  _("[endpoint, postData]", endpoint, postData)
 
   try {
     const res = await axios({
@@ -281,6 +279,44 @@ export const submitTaskAttachment = async (restUrl, { taskId, attachmentInfo, fi
     return attachment
   } catch (err) {
     _("[submitTaskAttachment][ERR]", err.message)
+    return null
+  }
+}
+
+/**
+ * Submit form files to task id
+ * @param taskId
+ * @param formData
+ * @return formData
+ */
+export const loopSubmitFormFilesToTaskId = (taskId, formData) => {
+  /* Updated formData */
+  return formData
+}
+
+/**
+ * Submit Task & Attachment
+ * by start a process
+ * @param restUrl
+ * @param processId
+ * @param data
+ * @return {Promise.<null>}
+ */
+export const submit = async (restUrl, processId, data) => {
+  const postData = transformFormDataToCamundaData(data)
+
+  try {
+    /* 1. Submit Task */
+    const taskBrief = await submitTask(restUrl, processId, postData)
+    const { id: taskId } = taskBrief
+
+    /* 2. Submit attachment based on task id */
+
+    /* 3. Update task with new attachment URL */
+
+    return udpatedTaskBrief
+  } catch (err) {
+    _("[submit][ERR]", err.message)
     return null
   }
 }
