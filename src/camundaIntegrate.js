@@ -17,6 +17,7 @@ export const getStartFormEndpoint = (restUrl, processDefinitionId) =>
   `${restUrl}/process-definition/${processDefinitionId}/startForm`
 export const getTaskListHistoryEndpoint = (restUrl, processInstanceId) =>
   `${restUrl}/history/task?processInstanceId=${processInstanceId}`
+export const getSubmitTaskAttachmentEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/attachment/create`
 
 /**
  * Transform Form data to Camunda data shape
@@ -247,6 +248,35 @@ export const getTaskListHistory = async (restUrl, taskId) => {
     return taskList
   } catch (err) {
     _("[getTaskListHistory][ERR]", err.message)
+    return null
+  }
+}
+
+/**
+ * Submit task file attachment
+ * @see https://docs.camunda.org/manual/7.8/reference/rest/task/attachment/post-task-attachment/
+ * @param restUrl
+ * @param taskId
+ * @param attachmentInfo
+ * @param file
+ * @return {Promise.<void>}
+ */
+export const submitTaskAttachment = async (restUrl, { taskId, attachmentInfo, file }) => {
+  try {
+    const endpoint = getSubmitTaskAttachmentEndpoint(restUrl, taskId)
+    const bodyFormData = new FormData()
+    bodyFormData.append("attachmentInfo", JSON.stringify(attachmentInfo))
+    bodyFormData.append("content", file)
+    const res = await axios({
+      method: "POST",
+      url: endpoint,
+      data: bodyFormData,
+      headers: { "Content-Type": "multipart/form-data" }
+    })
+    const attachment = res.data
+    return attachment
+  } catch (err) {
+    _("[submitTaskAttachment][ERR]", err.message)
     return null
   }
 }
