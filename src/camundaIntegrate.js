@@ -19,6 +19,8 @@ export const getStartFormEndpoint = (restUrl, processDefinitionId) =>
 export const getTaskListHistoryEndpoint = (restUrl, processInstanceId) =>
   `${restUrl}/history/task?processInstanceId=${processInstanceId}`
 export const getSubmitTaskAttachmentEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/attachment/create`
+export const getUpdateTaskFormVariablesEndpoint = (restUrl, taskId) =>
+  `${restUrl}/task/${taskId}/form-variables/resolve`
 
 /**
  * Transform Form data to Camunda data shape
@@ -54,17 +56,17 @@ export const transformFormDataToCamundaData = data => {
  * by start a process
  * @param restUrl
  * @param processId
- * @param postData
+ * @param camundaData
  * @return {Promise.<null>}
  */
-export const submitTask = async (restUrl, processId, postData) => {
+export const submitTask = async (restUrl, processId, camundaData) => {
   const endpoint = getStartProcessEndpoint(restUrl, processId)
 
   try {
     const res = await axios({
       method: "POST",
       url: endpoint,
-      data: postData
+      data: camundaData
     })
     return res.data
   } catch (err) {
@@ -327,22 +329,32 @@ export const loopSubmitFormFilesToTaskId = async (restUrl, taskId, formData) => 
  * by start a process
  * @param restUrl
  * @param processId
- * @param data
+ * @param formData
  * @return {Promise.<null>}
  */
-export const submit = async (restUrl, processId, data) => {
-  const postData = transformFormDataToCamundaData(data)
+export const submit = async (restUrl, processId, formData) => {
+  const camundaData = transformFormDataToCamundaData(formData)
 
   try {
     /* 1. Submit Task */
-    const taskBrief = await submitTask(restUrl, processId, postData)
+    const taskBrief = await submitTask(restUrl, processId, camundaData)
     const { id: taskId } = taskBrief
-
-    /* 2. Submit attachment based on task id */
-
-    /* 3. Update task with new attachment URL */
-
-    return udpatedTaskBrief
+    //
+    // /* 2. Submit attachment based on task id */
+    const updatedFormData = await loopSubmitFormFilesToTaskId(restUrl, taskId, formData)
+    _("[updatedFormData]", JSON.stringify(updatedFormData, null, 2))
+    //
+    // /* 3. Update task with new attachment URL */
+    // const udpateTaskEndpoint = getUpdateTaskFormVariablesEndpoint(restUrl, taskId)
+    // const res2 = await axios({
+    //   url: udpateTaskEndpoint,
+    //   method: "POST",
+    //   data: transformFormDataToCamundaData(updatedFormData)
+    // })
+    //
+    // const udpatedTaskBrief = res2.data
+    // return udpatedTaskBrief
+    return taskBrief
   } catch (err) {
     _("[submit][ERR]", err.message)
     return null
