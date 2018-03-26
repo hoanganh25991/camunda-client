@@ -359,22 +359,23 @@ export const submit = async (restUrl, processId, formData) => {
     const taskBrief = await submitTask(restUrl, processId, camundaData)
     _("[taskBrief]", taskBrief)
     const { id: processInstanceId } = taskBrief
-    //
+    const currentTask = await getCurrentTaskOfProcessInstance(restUrl, processInstanceId)
+    const { id: taskId } = currentTask
     // /* 2. Submit attachment based on task id */
-    const updatedFormData = await loopSubmitFormFilesToTaskId(restUrl, processInstanceId, formData)
+    const updatedFormData = await loopSubmitFormFilesToTaskId(restUrl, taskId, formData)
     _("[updatedFormData]", JSON.stringify(updatedFormData, null, 2))
-    //
-    // /* 3. Update task with new attachment URL */
-    // const udpateTaskEndpoint = getUpdateTaskFormVariablesEndpoint(restUrl, taskId)
-    // const res2 = await axios({
-    //   url: udpateTaskEndpoint,
-    //   method: "POST",
-    //   data: transformFormDataToCamundaData(updatedFormData)
-    // })
-    //
-    // const udpatedTaskBrief = res2.data
-    // return udpatedTaskBrief
-    return taskBrief
+
+    /* 3. Update task with new attachment URL */
+    const udpateTaskEndpoint = getUpdateTaskFormVariablesEndpoint(restUrl, taskId)
+    const res2 = await axios({
+      url: udpateTaskEndpoint,
+      method: "POST",
+      data: transformFormDataToCamundaData(updatedFormData)
+    })
+
+    const udpatedTaskBrief = res2.data
+    return udpatedTaskBrief
+    // return taskBrief
   } catch (err) {
     _("[submit][ERR]", err.message)
     return null
