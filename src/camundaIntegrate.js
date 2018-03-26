@@ -19,8 +19,7 @@ export const getStartFormEndpoint = (restUrl, processDefinitionId) =>
 export const getTaskListHistoryEndpoint = (restUrl, processInstanceId) =>
   `${restUrl}/history/task?processInstanceId=${processInstanceId}`
 export const getSubmitTaskAttachmentEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/attachment/create`
-export const getUpdateTaskFormVariablesEndpoint = (restUrl, taskId) =>
-  `${restUrl}/task/${taskId}/form-variables/resolve`
+export const getUpdateTaskFormVariablesEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/resolve`
 export const getFilterTaskEndpoint = restUrl => `${restUrl}/task`
 
 /**
@@ -356,12 +355,14 @@ export const submit = async (restUrl, processId, formData) => {
 
   try {
     /* 1. Submit Task */
-    const taskBrief = await submitTask(restUrl, processId, camundaData)
-    _("[taskBrief]", taskBrief)
-    const { id: processInstanceId } = taskBrief
+    const processInstance = await submitTask(restUrl, processId, camundaData)
+    _("[processInstance]", processInstance)
+    const { id: processInstanceId } = processInstance
     const currentTask = await getCurrentTaskOfProcessInstance(restUrl, processInstanceId)
     const { id: taskId } = currentTask
-    // /* 2. Submit attachment based on task id */
+    _("[currentTask]", currentTask)
+
+    /* 2. Submit attachment based on task id */
     const updatedFormData = await loopSubmitFormFilesToTaskId(restUrl, taskId, formData)
     _("[updatedFormData]", JSON.stringify(updatedFormData, null, 2))
 
@@ -374,8 +375,9 @@ export const submit = async (restUrl, processId, formData) => {
     })
 
     const udpatedTaskBrief = res2.data
+    _("[udpatedTaskBrief]", udpatedTaskBrief)
+
     return udpatedTaskBrief
-    // return taskBrief
   } catch (err) {
     _("[submit][ERR]", err.message)
     return null
