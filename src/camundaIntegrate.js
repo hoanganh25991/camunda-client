@@ -278,6 +278,8 @@ export const submitTaskAttachment = async (restUrl, { taskId, attachmentInfo, fi
       }
     })
     const attachment = res.data
+    _("[attachment]", attachment)
+
     return attachment
   } catch (err) {
     _("[submitTaskAttachment][ERR]", err.message)
