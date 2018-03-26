@@ -4,8 +4,23 @@
 <script>
     const restUrl = "http://localhost:8080/engine-rest"
     const taskId = "112e6ba8-2cce-11e8-8903-e09d312afda0"
+    const processId = "Process_1:1:358277ac-2cb7-11e8-9f17-e09d312afda0"
     const attachmentInfo = {
         type: "xyz",
         name: "xyz"
+    }
+    const data = {
+      jsonString: '{"q":12345}',
+      attachments: {
+        type: "file",
+        data: [
+          {
+            url: "http://localhost:8080/camunda-client/test.xlsx",
+            name: "test.xlsx",
+            size: 136780,
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+          }
+        ]
+      }
     }
 </script>

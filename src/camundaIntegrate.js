@@ -21,6 +21,7 @@ export const getTaskListHistoryEndpoint = (restUrl, processInstanceId) =>
 export const getSubmitTaskAttachmentEndpoint = (restUrl, taskId) => `${restUrl}/task/${taskId}/attachment/create`
 export const getUpdateTaskFormVariablesEndpoint = (restUrl, taskId) =>
   `${restUrl}/task/${taskId}/form-variables/resolve`
+export const getFilterTaskEndpoint = restUrl => `${restUrl}/task`
 
 /**
  * Transform Form data to Camunda data shape
@@ -324,6 +325,24 @@ export const loopSubmitFormFilesToTaskId = async (restUrl, taskId, formData) => 
   return formData
 }
 
+export const getCurrentTaskOfProcessInstance = async (restUrl, processInstanceId) => {
+  try {
+    const endpoint = getFilterTaskEndpoint(restUrl)
+    const res = await axios({
+      method: "GET",
+      url: endpoint,
+      params: { processInstanceId }
+    })
+    const [task] = res.data
+    // Assume that, when first load the task
+    // We only have ONE task
+    return task
+  } catch (err) {
+    _("[getCurrentTaskOfProcessInstance][ERR]", err.message)
+    return null
+  }
+}
+
 /**
  * Submit Task & Attachment
  * by start a process
@@ -338,10 +357,11 @@ export const submit = async (restUrl, processId, formData) => {
   try {
     /* 1. Submit Task */
     const taskBrief = await submitTask(restUrl, processId, camundaData)
-    const { id: taskId } = taskBrief
+    _("[taskBrief]", taskBrief)
+    const { id: processInstanceId } = taskBrief
     //
     // /* 2. Submit attachment based on task id */
-    const updatedFormData = await loopSubmitFormFilesToTaskId(restUrl, taskId, formData)
+    const updatedFormData = await loopSubmitFormFilesToTaskId(restUrl, processInstanceId, formData)
     _("[updatedFormData]", JSON.stringify(updatedFormData, null, 2))
     //
     // /* 3. Update task with new attachment URL */
